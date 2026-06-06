@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+  <kcfgfile name=""/>
+
+  <group name="General">
+    <entry name="borderRadius" type="Int">
+      <default>20</default>
+    </entry>
+    <entry name="backgroundColor" type="String">
+      <default>#1C1C1E</default>
+    </entry>
+    <entry name="backgroundOpacity" type="Double">
+      <default>0.96</default>
+    </entry>
+    <entry name="borderColor" type="String">
+      <default>#0DFFFFFF</default>
+    </entry>
+    <entry name="borderWidth" type="Int">
+      <default>1</default>
+    </entry>
+    <entry name="startHour" type="Int">
+      <default>6</default>
+    </entry>
+    <entry name="chartBarColorStart" type="String">
+      <default>#00C6FF</default>
+    </entry>
+    <entry name="chartBarColorEnd" type="String">
+      <default>#0072FF</default>
+    </entry>
+    <entry name="chartBarColorHoverStart" type="String">
+      <default>#60CFFF</default>
+    </entry>
+    <entry name="chartBarColorHoverEnd" type="String">
+      <default>#2094FF</default>
+    </entry>
+    <entry name="showHeader" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="barRadius" type="Int">
+      <default>4</default>
+    </entry>
+    <entry name="maxAppsShown" type="Int">
+      <default>5</default>
+    </entry>
+    <entry name="fontSizeModifier" type="Int">
+      <default>0</default>
+    </entry>
+    <entry name="fontFamily" type="String">
+      <default></default>
+    </entry>
+    <entry name="showPercentages" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="barWidth" type="Int">
+      <default>16</default>
+    </entry>
+    <entry name="blacklist" type="String">
+      <default>krunner,lockscreen</default>
+    </entry>
+  </group>
+</kcfg>
+
