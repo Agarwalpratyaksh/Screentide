@@ -1,0 +1,22 @@
+{
+    "KPlugin": {
+        "Id": "org.kde.activitywatch.widget",
+        "Name": "ActivityWatch Stats",
+        "Description": "Shows today's usage from ActivityWatch",
+        "Icon": "view-time-schedule",
+        "Category": "Utilities",
+        "Version": "1.0",
+        "Authors": [
+            {
+                "Name": "OpenCode",
+                "Email": "opencode@example.com"
+            }
+        ]
+    },
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.applet"
+    ]
+}
