@@ -9,21 +9,21 @@ Screentide lets you visualize your daily computer usage total, hourly activity c
     <tr>
       <td align="center" width="50%">
         <img src="screenshots/landscape_purple_minimal.jpeg" alt="Landscape Purple Minimal" width="100%"/>
-        <br><sub><i>Landscape Mode (Minimal Layout)</i></sub>
+        <br>
       </td>
       <td align="center" width="50%">
         <img src="screenshots/landscape_dark_red.jpeg" alt="Landscape Dark Red" width="100%"/>
-        <br><sub><i>Landscape Mode (Detailed View)</i></sub>
+        <br>
       </td>
     </tr>
     <tr>
       <td align="center" width="50%">
         <img src="screenshots/portrait_sunset_orange.jpeg" alt="Portrait Sunset Orange" width="100%"/>
-        <br><sub><i>Portrait Mode (General Settings)</i></sub>
+        <br>
       </td>
       <td align="center" width="50%">
         <img src="screenshots/portrait_anime_green.jpeg" alt="Portrait Anime Green" width="100%"/>
-        <br><sub><i>Portrait Mode (Accent Styling)</i></sub>
+        <br>
       </td>
     </tr>
   </table>
