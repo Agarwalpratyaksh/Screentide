@@ -32,6 +32,9 @@ ScrollView {
     property alias cfg_showPercentages: showPercentagesCheckBox.checked
     property alias cfg_barWidth: barWidthSlider.value
     property alias cfg_blacklist: blacklistField.text
+    property alias cfg_useSolidColor: useSolidColorCheckBox.checked
+    property alias cfg_useSystemTheme: useSystemThemeCheckBox.checked
+    property alias cfg_hourStepIndex: hourStepComboBox.currentIndex
 
     ColorDialog {
         id: colorDialog
@@ -199,6 +202,13 @@ ScrollView {
             Kirigami.FormData.label: i18n("Show App Percentages:")
         }
 
+        ComboBox {
+            id: hourStepComboBox
+            Kirigami.FormData.label: i18n("Chart Hour Grouping:")
+            model: ["1 Hour (24 bars)", "2 Hours (12 bars)", "3 Hours (8 bars)", "4 Hours (6 bars)", "6 Hours (4 bars)"]
+            Layout.fillWidth: true
+        }
+
         RowLayout {
             Kirigami.FormData.label: i18n("Max Apps Listed:")
             Layout.fillWidth: true
@@ -344,10 +354,21 @@ ScrollView {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: i18n("Chart Theme Colors")
         }
+
+        CheckBox {
+            id: useSystemThemeCheckBox
+            Kirigami.FormData.label: i18n("Use System Accent Colors:")
+        }
+
+        CheckBox {
+            id: useSolidColorCheckBox
+            Kirigami.FormData.label: i18n("Use Solid Color (No Gradients):")
+        }
         
         RowLayout {
-            Kirigami.FormData.label: i18n("Bar Gradient Start:")
+            Kirigami.FormData.label: useSolidColorCheckBox.checked ? i18n("Bar Color:") : i18n("Bar Gradient Start:")
             Layout.fillWidth: true
+            visible: !useSystemThemeCheckBox.checked
             
             TextField {
                 id: chartBarColorStartField
@@ -380,6 +401,7 @@ ScrollView {
         RowLayout {
             Kirigami.FormData.label: i18n("Bar Gradient End:")
             Layout.fillWidth: true
+            visible: !useSystemThemeCheckBox.checked && !useSolidColorCheckBox.checked
             
             TextField {
                 id: chartBarColorEndField
@@ -410,8 +432,9 @@ ScrollView {
         }
         
         RowLayout {
-            Kirigami.FormData.label: i18n("Bar Hover Start:")
+            Kirigami.FormData.label: useSolidColorCheckBox.checked ? i18n("Bar Hover Color:") : i18n("Bar Hover Start:")
             Layout.fillWidth: true
+            visible: !useSystemThemeCheckBox.checked
             
             TextField {
                 id: chartBarColorHoverStartField
@@ -444,6 +467,7 @@ ScrollView {
         RowLayout {
             Kirigami.FormData.label: i18n("Bar Hover End:")
             Layout.fillWidth: true
+            visible: !useSystemThemeCheckBox.checked && !useSolidColorCheckBox.checked
             
             TextField {
                 id: chartBarColorHoverEndField
@@ -504,6 +528,9 @@ ScrollView {
                 showPercentagesCheckBox.checked = true;
                 barWidthSlider.value = 16;
                 blacklistField.text = "krunner,lockscreen";
+                useSolidColorCheckBox.checked = false;
+                useSystemThemeCheckBox.checked = false;
+                hourStepComboBox.currentIndex = 0;
             }
         }
     }

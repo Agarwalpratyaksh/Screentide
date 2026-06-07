@@ -1,9 +1,9 @@
 {
     "KPlugin": {
-        "Id": "org.kde.activitywatch.widget",
-        "Name": "ActivityWatch Stats",
+        "Id": "org.kde.screentide.widget",
+        "Name": "Screentide",
         "Description": "Shows today's usage from ActivityWatch",
-        "Icon": "view-time-schedule",
+        "Icon": "screentide",
         "Category": "Utilities",
         "Version": "1.0",
         "Authors": [

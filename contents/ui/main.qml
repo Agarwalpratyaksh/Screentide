@@ -24,6 +24,13 @@ PlasmoidItem {
     // Custom font configuration
     property string customFontFamily: plasmoid.configuration.fontFamily !== "" ? plasmoid.configuration.fontFamily : Kirigami.Theme.defaultFont.family
     
+    // Resolved color options (either system theme accent colors or custom settings colors)
+    readonly property color resolvedBarColorStart: plasmoid.configuration.useSystemTheme ? Kirigami.Theme.highlightColor : plasmoid.configuration.chartBarColorStart
+    readonly property color resolvedBarColorEnd: plasmoid.configuration.useSolidColor ? resolvedBarColorStart : (plasmoid.configuration.useSystemTheme ? Qt.lighter(Kirigami.Theme.highlightColor, 1.25) : plasmoid.configuration.chartBarColorEnd)
+    
+    readonly property color resolvedBarColorHoverStart: plasmoid.configuration.useSystemTheme ? Qt.lighter(Kirigami.Theme.highlightColor, 1.15) : plasmoid.configuration.chartBarColorHoverStart
+    readonly property color resolvedBarColorHoverEnd: plasmoid.configuration.useSolidColor ? resolvedBarColorHoverStart : (plasmoid.configuration.useSystemTheme ? Qt.lighter(Kirigami.Theme.highlightColor, 1.35) : plasmoid.configuration.chartBarColorHoverEnd)
+    
     onDayOffsetChanged: {
         updateDateLabel();
         fetchData();
@@ -48,6 +55,10 @@ PlasmoidItem {
             root.dataCache = {};
             root.fetchData();
         }
+        function onHourStepIndexChanged() {
+            root.dataCache = {};
+            root.fetchData();
+        }
     }
     
     function updateDateLabel() {
@@ -62,7 +73,13 @@ PlasmoidItem {
         }
     }
     
-    property var hourlyData: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    readonly property int hourStep: {
+        var steps = [1, 2, 3, 4, 6];
+        var idx = plasmoid.configuration.hourStepIndex;
+        return (idx >= 0 && idx < steps.length) ? steps[idx] : 1;
+    }
+    
+    property var hourlyData: []
     property real maxHourlyTime: 1
     
     ListModel { id: appsModel }
@@ -87,8 +104,9 @@ PlasmoidItem {
 
     function getHourLabel(index) {
         var startHour = plasmoid.configuration.startHour
-        var startHr = (index + startHour) % 24;
-        var endHr = (index + startHour + 1) % 24;
+        var step = root.hourStep
+        var startHr = (index * step + startHour) % 24;
+        var endHr = ((index + 1) * step + startHour) % 24;
         return formatHourHelper(startHr) + " - " + formatHourHelper(endHr);
     }
     
@@ -241,7 +259,10 @@ PlasmoidItem {
                     if (!resultEvents || !resultEvents.length) resultEvents = []
                     
                     var totalSecs = 0
-                    var hourBins = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                    var step = root.hourStep
+                    var binCount = Math.ceil(24 / step)
+                    var hourBins = []
+                    for (var bIdx = 0; bIdx < binCount; bIdx++) hourBins.push(0)
                     var appMap = {}
                     
                     // Parse ignore filter
@@ -274,14 +295,19 @@ PlasmoidItem {
                         var evDate = new Date(ev.timestamp)
                         var hr = evDate.getHours()
                         var mappedHr = (hr >= startHour) ? (hr - startHour) : (hr + 24 - startHour)
-                        if (mappedHr >= 0 && mappedHr < 24) hourBins[mappedHr] += dur
+                        if (mappedHr >= 0 && mappedHr < 24) {
+                            var binIndex = Math.floor(mappedHr / step)
+                            if (binIndex >= 0 && binIndex < binCount) {
+                                hourBins[binIndex] += dur
+                            }
+                        }
                     }
                     
                     root.totalTimeStr = formatDuration(totalSecs)
                     root.hourlyData = hourBins
                     
                     var m = 1
-                    for (var h = 0; h < 24; h++) if (hourBins[h] > m) m = hourBins[h]
+                    for (var h = 0; h < binCount; h++) if (hourBins[h] > m) m = hourBins[h]
                     root.maxHourlyTime = m
                     
                     var sortable = []
@@ -340,7 +366,11 @@ PlasmoidItem {
                     // Server Offline / Unreachable
                     root.isServerOffline = true;
                     root.totalTimeStr = "Offline";
-                    root.hourlyData = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                    var offlineBins = [];
+                    var offlineStep = root.hourStep;
+                    var offlineBinCount = Math.ceil(24 / offlineStep);
+                    for (var oIdx = 0; oIdx < offlineBinCount; oIdx++) offlineBins.push(0);
+                    root.hourlyData = offlineBins;
                     root.maxHourlyTime = 1;
                     appsModel.clear();
                     root.triggerUpdate += 1;
@@ -668,11 +698,11 @@ PlasmoidItem {
                 
                 // Bars & Hover
                 Repeater {
-                    model: 24
+                    model: root.hourlyData.length
                     Item {
-                        x: (index / 24) * chartAreaPortrait.graphWidth
+                        x: (index / root.hourlyData.length) * chartAreaPortrait.graphWidth
                         y: 0
-                        width: chartAreaPortrait.graphWidth / 24
+                        width: chartAreaPortrait.graphWidth / root.hourlyData.length
                         height: chartAreaPortrait.graphHeight
                         
                         Rectangle {
@@ -682,14 +712,14 @@ PlasmoidItem {
                             
                             anchors.bottom: parent.bottom
                             anchors.horizontalCenter: parent.horizontalCenter
-                            width: plasmoid.configuration.barWidth
+                            width: Math.max(1, Math.min(plasmoid.configuration.barWidth, parent.width - 2))
                             height: barHeight
                             radius: plasmoid.configuration.barRadius
                             
                             // Configurable gradient colors
                             gradient: Gradient {
-                                GradientStop { position: 0.0; color: mouseAreaPortrait.containsMouse ? plasmoid.configuration.chartBarColorHoverStart : plasmoid.configuration.chartBarColorStart }
-                                GradientStop { position: 1.0; color: mouseAreaPortrait.containsMouse ? plasmoid.configuration.chartBarColorHoverEnd : plasmoid.configuration.chartBarColorEnd }
+                                GradientStop { position: 0.0; color: mouseAreaPortrait.containsMouse ? root.resolvedBarColorHoverStart : root.resolvedBarColorStart }
+                                GradientStop { position: 1.0; color: mouseAreaPortrait.containsMouse ? root.resolvedBarColorHoverEnd : root.resolvedBarColorEnd }
                             }
                             
                             Behavior on height {
@@ -834,8 +864,8 @@ PlasmoidItem {
                                         radius: 1.5
                                         gradient: Gradient {
                                             orientation: Gradient.Horizontal
-                                            GradientStop { position: 0.0; color: plasmoid.configuration.chartBarColorStart }
-                                            GradientStop { position: 1.0; color: plasmoid.configuration.chartBarColorEnd }
+                                            GradientStop { position: 0.0; color: root.resolvedBarColorStart }
+                                            GradientStop { position: 1.0; color: root.resolvedBarColorEnd }
                                         }
                                     }
                                 }
@@ -1049,11 +1079,11 @@ PlasmoidItem {
                     
                     // Bars & Hover
                     Repeater {
-                        model: 24
+                        model: root.hourlyData.length
                         Item {
-                            x: (index / 24) * chartAreaLandscape.graphWidth
+                            x: (index / root.hourlyData.length) * chartAreaLandscape.graphWidth
                             y: 0
-                            width: chartAreaLandscape.graphWidth / 24
+                            width: chartAreaLandscape.graphWidth / root.hourlyData.length
                             height: chartAreaLandscape.graphHeight
                             
                             Rectangle {
@@ -1063,13 +1093,13 @@ PlasmoidItem {
                                 
                                 anchors.bottom: parent.bottom
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                width: plasmoid.configuration.barWidth
+                                width: Math.max(1, Math.min(plasmoid.configuration.barWidth, parent.width - 2))
                                 height: barHeight
                                 radius: plasmoid.configuration.barRadius
                                 
                                 gradient: Gradient {
-                                    GradientStop { position: 0.0; color: mouseAreaLandscape.containsMouse ? plasmoid.configuration.chartBarColorHoverStart : plasmoid.configuration.chartBarColorStart }
-                                    GradientStop { position: 1.0; color: mouseAreaLandscape.containsMouse ? plasmoid.configuration.chartBarColorHoverEnd : plasmoid.configuration.chartBarColorEnd }
+                                    GradientStop { position: 0.0; color: mouseAreaLandscape.containsMouse ? root.resolvedBarColorHoverStart : root.resolvedBarColorStart }
+                                    GradientStop { position: 1.0; color: mouseAreaLandscape.containsMouse ? root.resolvedBarColorHoverEnd : root.resolvedBarColorEnd }
                                 }
                                 
                                 Behavior on height {
@@ -1224,8 +1254,8 @@ PlasmoidItem {
                                         radius: 1.5
                                         gradient: Gradient {
                                             orientation: Gradient.Horizontal
-                                            GradientStop { position: 0.0; color: plasmoid.configuration.chartBarColorStart }
-                                            GradientStop { position: 1.0; color: plasmoid.configuration.chartBarColorEnd }
+                                            GradientStop { position: 0.0; color: root.resolvedBarColorStart }
+                                            GradientStop { position: 1.0; color: root.resolvedBarColorEnd }
                                         }
                                     }
                                 }

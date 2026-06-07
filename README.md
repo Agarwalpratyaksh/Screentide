@@ -1,4 +1,4 @@
-# ActivityWatch Screentime Tracker (KDE Plasma 6 Widget)
+# Screentide (KDE Plasma 6 Widget)
 
 A highly customizable, responsive, and minimalist screentime tracking widget for the **KDE Plasma 6 Desktop Environment**, powered by the local, open-source **[ActivityWatch](https://activitywatch.net/)** engine.
 
@@ -45,7 +45,7 @@ It displays your daily computer usage total, hourly activity charts, and the top
 Once published, users can install it instantly from the desktop:
 1.  Right-click your desktop background and select **Add Widgets...**
 2.  Click **Get New Widgets** -> **Download New Plasma Widgets**.
-3.  Search for `ActivityWatch Screentime Tracker`.
+3.  Search for `Screentide`.
 4.  Click **Install**, then drag it onto your desktop panel or desktop grid.
 
 ---
@@ -56,8 +56,8 @@ Clone the repository and install it using the KDE Plasma package management util
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/activitywatch-widget.git
-cd activitywatch-widget
+git clone https://github.com/yourusername/screentide-widget.git
+cd screentide-widget
 
 # Install the widget package globally
 kpackagetool6 --type Plasma/Applet --install package/
@@ -67,15 +67,15 @@ kpackagetool6 --type Plasma/Applet --install package/
 You can also manually copy the `package` folder to your local Plasma configuration directories:
 
 ```bash
-mkdir -p ~/.local/share/plasma/plasmoids/org.kde.activitywatch.widget
-cp -r package/* ~/.local/share/plasma/plasmoids/org.kde.activitywatch.widget/
+mkdir -p ~/.local/share/plasma/plasmoids/org.kde.screentide.widget
+cp -r package/* ~/.local/share/plasma/plasmoids/org.kde.screentide.widget/
 ```
 
 ---
 
 ## Customization & Options
 
-Right-click the widget and click **"Configure ActivityWatch Stats..."** to adjust your setup:
+Right-click the widget and click **"Configure Screentide..."** to adjust your setup:
 
 1.  **Background & Borders**: Visual styles, opacity, border width, and border radius.
 2.  **Layout & Sizing**: Header toggles, list sizing, bar width/radius, and percentage settings.
@@ -93,7 +93,7 @@ If you are developing or modifying the widget code locally:
 
 ```bash
 # 1. Sync modifications to your local plasmoids directory:
-cp -rv package/* ~/.local/share/plasma/plasmoids/org.kde.activitywatch.widget/
+cp -rv package/* ~/.local/share/plasma/plasmoids/org.kde.screentide.widget/
 
 # 2. Clear QML caches & rebuild system package list:
 rm -rf ~/.cache/qmlcache/* && kbuildsycoca6
