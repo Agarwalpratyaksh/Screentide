@@ -64,7 +64,19 @@ kpackagetool6 --type Plasma/Applet --install .
 kpackagetool6 --type Plasma/Applet --upgrade .
 ```
 
-### Method 3: Manual Installation (Alternative)
+### Method 3: Direct `.plasmoid` Installation (KDE Store Download)
+
+If you downloaded the compiled `screentide.plasmoid` package directly from the KDE Store website, you can install it using:
+
+```bash
+# Install the downloaded plasmoid file
+kpackagetool6 --type Plasma/Applet --install screentide.plasmoid
+
+# To upgrade an already installed version:
+kpackagetool6 --type Plasma/Applet --upgrade screentide.plasmoid
+```
+
+### Method 4: Manual Installation (Alternative)
 
 If you prefer to copy the files manually into your local user widgets directory:
 
